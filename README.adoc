@@ -1,0 +1,23 @@
+= Matlab for Nix users
+
+This repo is a collection of files that should help Nix and NixOS users install matlab imperatively.
+
+== How to use this
+
+=== Installation of matlab itself
+
+==== Run `matlab-shell` with +++<s>stable</s>+++ legacy Nix
+
+==== Run `matlab-shell` with an unstable Nix
+
+=== Adding `matlab` executables to your system
+
+==== For NixOS users with a flakes setup
+
+==== For NixOS users without a flakes setup
+
+==== Home Manager setup
+
+== Previous work
+
+TODO:: Add links to tviti's repo etc.

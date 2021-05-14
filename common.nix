@@ -2,64 +2,58 @@
    R2020a, available at
      https://github.com/mathworks-ref-arch/container-images
 */
+pkgs:
 
-{ }:
+(with pkgs; [
+  cacert
+  alsaLib # libasound2
+  atk
+  glib
+  glibc
+  cairo
+  cups
+  dbus
+  fontconfig
+  gdk-pixbuf
+  #gst-plugins-base
+  # gstreamer
+  gtk3
+  nspr
+  nss
+  pam
+  pango
+  python27
+  python36
+  python37
+  libselinux
+  libsndfile
+  glibcLocales
+  procps
+  unzip
+  zlib
 
-rec {
-  runPath = "$HOME/downloads/software/matlab/installation";
-  targetPkgs = pkgs:
-    with pkgs;
-    [
-      cacert
-      alsaLib # libasound2
-      atk
-      glib
-      glibc
-      cairo
-      cups
-      dbus
-      fontconfig
-      gdk-pixbuf
-      #gst-plugins-base
-      # gstreamer
-      gtk3
-      nspr
-      nss
-      pam
-      pango
-      python27
-      python36
-      python37
-      libselinux
-      libsndfile
-      glibcLocales
-      procps
-      unzip
-      zlib
+  gcc
+  gfortran
 
-      gcc
-      gfortran
-
-      # nixos specific
-      udev
-      jre
-      ncurses # Needed for CLI
-    ] ++ (with xorg; [
-      libSM
-      libX11
-      libxcb
-      libXcomposite
-      libXcursor
-      libXdamage
-      libXext
-      libXfixes
-      libXft
-      libXi
-      libXinerama
-      libXrandr
-      libXrender
-      libXt
-      libXtst
-      libXxf86vm
-    ]);
-}
+  # nixos specific
+  udev
+  jre
+  ncurses # Needed for CLI
+]) ++ (with pkgs.xorg; [
+  libSM
+  libX11
+  libxcb
+  libXcomposite
+  libXcursor
+  libXdamage
+  libXext
+  libXfixes
+  libXft
+  libXi
+  libXinerama
+  libXrandr
+  libXrender
+  libXt
+  libXtst
+  libXxf86vm
+])

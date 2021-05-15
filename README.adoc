@@ -13,13 +13,13 @@ that a nix-shell will provide.
 === Run `matlab-shell` with an unstable Nix
 
 ....
-nix run github:doronbehar/nix-matlab#matlab-shell
+nix run gitlab:doronbehar/nix-matlab#matlab-shell
 ....
 
 === Run `matlab-shell` with +++<s>stable</s>+++ legacy Nix
 
 ....
-git clone https://github.com/doronbehar/nix-matlab
+git clone https://gitlab.com/doronbehar/nix-matlab
 cd nix-matlab
 nix-shell
 ....

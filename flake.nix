@@ -47,6 +47,11 @@
       buildInputs = (targetPkgs pkgs) ++ [
         self.packages.x86_64-linux.matlab-shell
       ];
+      # From some reason using the attribute matlab-shell directly as the
+      # devShell doesn't make it run like that by default.
+      shellHook = ''
+        exec matlab-shell
+      '';
     };
 
     defaultPackage.x86_64-linux = self.packages.x86_64-linux.matlab;

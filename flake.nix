@@ -74,8 +74,8 @@
         ${nixpkgs.lib.strings.escape ["`" "'" "\"" "$"] (builtins.readFile ./install.adoc)}
 
         4. Finish the installation, and exit the shell (with \`exit\`).
-        5. Continue on with the instructions for making the matlab executable available
-           anywhere on your system.
+        5. Follow the rest of the instructions in the README to make matlab
+           executable available anywhere on your system.
         ============================
         EOF
         exec bash

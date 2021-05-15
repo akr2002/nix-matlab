@@ -32,7 +32,8 @@
     desktopItem = pkgs.makeDesktopItem {
       desktopName = "Matlab";
       name = "matlab";
-      exec = "${builtins.placeholder "out"}/bin/matlab %F";
+      # We use substituteInPlace after we run `install`
+      exec = "@out@/bin/matlab %F";
       icon = "matlab";
       # Most of the following are copied from octave's desktop launcher
       categories = "Utility;TextEditor;Development;IDE;";
@@ -48,6 +49,8 @@
       inherit targetPkgs;
       extraInstallCommands = ''
         install -Dm644 ${desktopItem}/share/applications/matlab.desktop $out/share/applications/matlab.desktop
+        substituteInPlace $out/share/applications/matlab.desktop \
+          --replace "@out@" ${placeholder "out"}
         install -Dm644 ${./icons/hicolor/256x256/matlab.png} $out/share/icons/hicolor/256x256/matlab.png
         install -Dm644 ${./icons/hicolor/512x512/matlab.png} $out/share/icons/hicolor/512x512/matlab.png
         install -Dm644 ${./icons/hicolor/64x64/matlab.png} $out/share/icons/hicolor/64x64/matlab.png

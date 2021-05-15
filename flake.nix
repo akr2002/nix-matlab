@@ -32,7 +32,9 @@
       desktopName = "Matlab";
       name = "matlab";
       # We use substituteInPlace after we run `install`
-      exec = "@out@/bin/matlab %F";
+      # -desktop is needed, see:
+      # https://www.mathworks.com/matlabcentral/answers/20-how-do-i-make-a-desktop-launcher-for-matlab-in-linux#answer_25
+      exec = "@out@/bin/matlab -desktop %F";
       icon = "matlab";
       # Most of the following are copied from octave's desktop launcher
       categories = "Utility;TextEditor;Development;IDE;";

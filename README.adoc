@@ -64,7 +64,7 @@ inputs = {
   in {
     nixosConfigurations = (
       HOSTNAME = nixpkgs.lib.nixosSystem {
-        (import ./configuration.nix flake-overlays)
+        modules = [ (import ./configuration.nix flake-overlays) ]
       };
     };
   };

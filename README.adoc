@@ -45,13 +45,83 @@ paths according to your setup.
 
 ==== For NixOS users with a flakes setup
 
+[source,nix]
+----
+inputs = {
+  # ...
+  nix-matlab = {
+    # Recommended if you also override the default nixpkgs flake, common among
+    # nixos-unstable users:
+    #inputs.nixpkgs.follows = "nixpkgs";
+    url = "gitlab:doronbehar/nix-matlab";
+  };
+  # ...
+  outputs = { self, nixpkgs, nix-matlab }:
+  let
+    flake-overlays = [
+      nix-matlab.overlay
+    ];
+  in {
+    nixosConfigurations = (
+      HOSTNAME = nixpkgs.lib.nixosSystem {
+        (import ./configuration.nix flake-overlays)
+      };
+    };
+  };
+};
+----
 
+And in `./configuration.nix`:
+
+
+[source,nix]
+----
+
+# All overlays given by flakes
+flake-overlays:
+
+{ config, pkgs, options, lib, ... }:
+{
+  nixpkgs.overlays = [
+    (
+      final: prev: {
+        # Your own overlays...
+      }
+    )
+  ] ++ flake-overlays;
+}
+----
+
+Example evaluated
+https://gitlab.com/doronbehar/nixos-configs/-/blob/e28b5aaf86f21202a2b7daa05b098ee5ed85de6f/flake.nix#L5-16[here]
+and
+https://gitlab.com/doronbehar/nixos-configs/-/blob/e28b5aaf86f21202a2b7daa05b098ee5ed85de6f/configuration.nix#L74[here].
 
 ==== For NixOS users without a flakes setup
 
+The following setup should also fit flake NixOS users.
+
+Add to your `configration.nix` (untested, but should work):
+
+[source,nix]
+----
+  nixpkgs.overlays = let
+    nix-matlab = import (builtins.fetchTarball "https://gitlab.com/doronbehar/nix-matlab/-/archive/master/nix-matlab-master.tar.gz") { };
+  in [
+    nix-matlab.overlay
+    (
+      final: prev: {
+        # Your own overlays...
+      }
+    )
+  ];
+----
+
 ==== Home Manager setup
 
-== Previous work
+TODO
+
+== Previous work / Credits
 
 Core parts of this repo are based on
 https://github.com/tviti/nix-cfg/tree/e6531426e86273e450c6133a0deae9008411fffd/pkgs/matlab[@tviti's

@@ -15,10 +15,9 @@
     targetPkgs = import ./common.nix;
     # TODO: Make it possible to override this - imperatively or declaratively?
     defaultRunPath = "$HOME/downloads/software/matlab/installation";
-    # TODO: This doesn't work - matlab is unusable
     runScriptPrefix = ''
       #!${pkgs.bash}/bin/bash
-      export MATLAB_JAVA=/usr/lib/openjdk
+      # Needed for simulink even on wayland systems
       export QT_QPA_PLATFORM=xcb
     '';
   in {

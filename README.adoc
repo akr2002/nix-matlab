@@ -30,9 +30,22 @@ include::./install.adoc[]
 
 === Adding `matlab` executables to your system
 
-TODO:: Write this
+With what was done now, you run Matlab from the command line with:
+
+....
+# Legacy nix users (inside a clone of this repo)
+$(nix-build)/bin/matlab
+# Flake nix users (without cloning)
+nix run gitlab:doronbehar/nix-matlab
+....
+
+But it's likely you'd like to make Matlab survive garbage collections and add a
+desktop launcher to your system. To do that you can follow one of the following
+paths according to your setup.
 
 ==== For NixOS users with a flakes setup
+
+
 
 ==== For NixOS users without a flakes setup
 
@@ -40,4 +53,7 @@ TODO:: Write this
 
 == Previous work
 
-TODO:: Add links to tviti's repo etc.
+Core parts of this repo are based on
+https://github.com/tviti/nix-cfg/tree/e6531426e86273e450c6133a0deae9008411fffd/pkgs/matlab[@tviti's
+work]. My part was making it a bit more accessible for modern Nix flake setup,
+and making the shell and steps a bit more approachable.

@@ -29,11 +29,29 @@
         exit 2
       fi
     '';
+    desktopItem = pkgs.makeDesktopItem {
+      desktopName = "Matlab";
+      name = "matlab";
+      exec = "${builtins.placeholder "out"}/bin/matlab %F";
+      icon = "matlab";
+      # Most of the following are copied from octave's desktop launcher
+      categories = "Utility;TextEditor;Development;IDE;";
+      mimeType = "text/x-octave;text/x-matlab;";
+      extraEntries = ''
+        Keywords=science;math;matrix;numerical computation;plotting;
+      '';
+    };
   in {
 
     packages.x86_64-linux.matlab = pkgs.buildFHSUserEnv {
       name = "matlab";
       inherit targetPkgs;
+      extraInstallCommands = ''
+        install -Dm644 ${desktopItem}/share/applications/matlab.desktop $out/share/applications/matlab.desktop
+        install -Dm644 ${./icons/hicolor/256x256/matlab.png} $out/share/icons/hicolor/256x256/matlab.png
+        install -Dm644 ${./icons/hicolor/512x512/matlab.png} $out/share/icons/hicolor/512x512/matlab.png
+        install -Dm644 ${./icons/hicolor/64x64/matlab.png} $out/share/icons/hicolor/64x64/matlab.png
+      '';
       runScript = runScriptPrefix + ''
         exec $INSTALL_DIR/bin/matlab "$@"
       '';
@@ -60,7 +78,7 @@
         exec bash
       '';
     };
-    packages.x86_64-linux.mlint = pkgs.buildFHSUserEnv {
+    packages.x86_64-linux.matlab-mlint = pkgs.buildFHSUserEnv {
       name = "mlint";
       inherit targetPkgs;
       runScript = runScriptPrefix + ''
@@ -68,7 +86,7 @@
       '';
     };
     overlay = final: prev: {
-      inherit (self.packages.x86_64-linux) matlab matlab-shell mlint;
+      inherit (self.packages.x86_64-linux) matlab matlab-shell matlab-mlint;
     };
     devShell.x86_64-linux = pkgs.mkShell {
       buildInputs = (targetPkgs pkgs) ++ [

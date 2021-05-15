@@ -14,7 +14,6 @@
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
     targetPkgs = import ./common.nix;
     runScriptPrefix = ''
-      #!${pkgs.bash}/bin/bash
       # Needed for simulink even on wayland systems
       export QT_QPA_PLATFORM=xcb
       # Search for an imperative declaration of the installation directory of matlab
@@ -63,7 +62,6 @@
       name = "matlab-shell";
       inherit targetPkgs;
       runScript = ''
-        #!${pkgs.bash}/bin/bash
         # needed for simulink in fact, but doesn't harm here as well.
         export QT_QPA_PLATFORM=xcb
         cat <<EOF

@@ -1,0 +1,9 @@
+1. Run the `install` executable extracted from the installation zip file.
+2. Follow along with the installation wizard:
+  - When prompted for an install location, select a user-writable directory.
+3. Create the file `~/.config/matlab/nix.sh` and write to it simply, (e.g):
+
+....
+INSTALL_DIR=$HOME/downloads/software/matlab/installation
+....
+

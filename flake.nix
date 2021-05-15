@@ -13,12 +13,21 @@
     # supported
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
     targetPkgs = import ./common.nix;
-    # TODO: Make it possible to override this - imperatively or declaratively?
-    defaultRunPath = "$HOME/downloads/software/matlab/installation";
     runScriptPrefix = ''
       #!${pkgs.bash}/bin/bash
       # Needed for simulink even on wayland systems
       export QT_QPA_PLATFORM=xcb
+      # Search for an imperative declaration of the installation directory of matlab
+      if [[ -f ~/.config/matlab/nix.sh ]]; then
+        source ~/.config/matlab/nix.sh
+      else
+        echo "nix-matlab-error: Did not find ~/.config/matlab/nix.sh" >&2
+        exit 1
+      fi
+      if [[ ! -d "$INSTALL_DIR" ]]; then
+        echo "nix-matlab-error: INSTALL_DIR $INSTALL_DIR isn't a directory" >&2
+        exit 2
+      fi
     '';
   in {
 
@@ -26,18 +35,36 @@
       name = "matlab";
       inherit targetPkgs;
       runScript = runScriptPrefix + ''
-        exec ${defaultRunPath}/bin/matlab "$@"
+        exec $INSTALL_DIR/bin/matlab "$@"
       '';
     };
     packages.x86_64-linux.matlab-shell = pkgs.buildFHSUserEnv {
       name = "matlab-shell";
       inherit targetPkgs;
+      runScript = ''
+        #!${pkgs.bash}/bin/bash
+        # needed for simulink in fact, but doesn't harm here as well.
+        export QT_QPA_PLATFORM=xcb
+        cat <<EOF
+        ============================
+        welcome to nix-matlab shell!
+
+        To install matlab:
+        ${nixpkgs.lib.strings.escape ["`" "'" "\"" "$"] (builtins.readFile ./install.adoc)}
+
+        4. Finish the installation, and exit the shell (with `exit`).
+        5. Continue on with the instructions for making the matlab executable available
+           anywhere on your system.
+        ============================
+        EOF
+        exec bash
+      '';
     };
     packages.x86_64-linux.mlint = pkgs.buildFHSUserEnv {
       name = "mlint";
       inherit targetPkgs;
       runScript = runScriptPrefix + ''
-        exec ${defaultRunPath}/bin/glnxa64/mlint "$@"
+        exec $INSTALL_DIR/bin/glnxa64/mlint "$@"
       '';
     };
     overlay = final: prev: {

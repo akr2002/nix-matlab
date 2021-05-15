@@ -1,16 +1,36 @@
 = Matlab for Nix users
 
-This repo is a collection of files that should help Nix and NixOS users install matlab imperatively.
+This repo is a collection of files that should help Nix and NixOS users install Matlab imperatively.
 
-== How to use this
+== Install
 
-=== Installation of matlab itself
+Like any other Matlab user, you should first go to your Matlab account on
+Mathworks' website, at: https://www.mathworks.com/mwaccount/ and download the
+installation zip file. Extract the zip file and note the `install` executable
+you just extracted. To run that file, you'll need to get into a FHS environment
+that a nix-shell will provide.
 
-==== Run `matlab-shell` with +++<s>stable</s>+++ legacy Nix
+=== Run `matlab-shell` with an unstable Nix
 
-==== Run `matlab-shell` with an unstable Nix
+....
+nix run github:doronbehar/nix-matlab#matlab-shell
+....
+
+=== Run `matlab-shell` with +++<s>stable</s>+++ legacy Nix
+
+....
+git clone https://github.com/doronbehar/nix-matlab
+cd nix-matlab
+nix-shell
+....
+
+=== Installation of Matlab itself
+
+include::./install.adoc[]
 
 === Adding `matlab` executables to your system
+
+TODO:: Write this
 
 ==== For NixOS users with a flakes setup
 

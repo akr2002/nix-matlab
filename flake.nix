@@ -88,8 +88,15 @@
         exec $INSTALL_DIR/bin/glnxa64/mlint "$@"
       '';
     };
+    packages.x86_64-linux.matlab-mex = pkgs.buildFHSUserEnv {
+      name = "mex";
+      inherit targetPkgs;
+      runScript = runScriptPrefix + ''
+        exec $INSTALL_DIR/bin/glnxa64/mex "$@"
+      '';
+    };
     overlay = final: prev: {
-      inherit (self.packages.x86_64-linux) matlab matlab-shell matlab-mlint;
+      inherit (self.packages.x86_64-linux) matlab matlab-shell matlab-mlint matlab-mex;
     };
     devShell.x86_64-linux = pkgs.mkShell {
       buildInputs = (targetPkgs pkgs) ++ [

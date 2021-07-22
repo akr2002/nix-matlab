@@ -98,6 +98,16 @@
     overlay = final: prev: {
       inherit (self.packages.x86_64-linux) matlab matlab-shell matlab-mlint matlab-mex;
     };
+    # Might be useful for usage of this flake in another flake with devShell +
+    # direnv setup. See:
+    # https://gitlab.com/doronbehar/nix-matlab/-/merge_requests/1#note_631741222
+    shellHooksCommon = runScriptPrefix + ''
+      export C_INCLUDE_PATH=$INSTALL_DIR/extern/include:$C_INCLUDE_PATH
+      export CPLUS_INCLUDE_PATH=$INSTALL_DIR/extern/include:$CPLUS_INCLUDE_PATH
+      # Rename the variable for others to extend it in their shellHook
+      export MATLAB_INSTALL_DIR="$INSTALL_DIR"
+      unset INSTALL_DIR
+    '';
     devShell.x86_64-linux = pkgs.mkShell {
       buildInputs = (targetPkgs pkgs) ++ [
         self.packages.x86_64-linux.matlab-shell

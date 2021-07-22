@@ -121,9 +121,41 @@ Add to your `configration.nix` (untested, but should work):
 
 TODO
 
+==== Usage in Other Flakes / `shell.nix`
+
+Some people may wish to not install matlab globally, and only making it part of
+the `buildInputs` of their project. Usually this paradigm follows along with
+https://direnv.net/[`direnv`] +
+https://nixos.wiki/wiki/Development_environment_with_nix-shell#Using_Direnv[`shell.nix`]
+/ https://nixos.wiki/wiki/Flakes#Direnv_integration[`flake.nix`] setup. For
+example you can create in your project a `shell.nix`, or define `devShell` in
+your `flake.nix` similarly to this: 
+
+[source,nix]
+----
+{ pkgs, nix-matlab }:
+
+pkgs.mkShell {
+  buildInputs = (with nix-matlab.packages.x86_64-linux; [
+    matlab
+    matlab-mlint
+    matlab-mex
+  ]);
+  # Define C include path env vars for c development
+  shellHook = nix-matlab.shellHooksCommon;
+}
+----
+
+Note that Matlab still needs to be installed in a user-writeable location for
+this `shellHook` to work, as explained xref:#user-content-install[here].
+
 == Previous work / Credits
 
 Core parts of this repo are based on
 https://github.com/tviti/nix-cfg/tree/e6531426e86273e450c6133a0deae9008411fffd/pkgs/matlab[@tviti's
 work]. My part was making it a bit more accessible for modern Nix flake setup,
 and making the shell and steps a bit more approachable.
+
+The idea for a `shellHooksCommon` was by
+https://gitlab.com/DavidRConnell[@DavidRConnell], first discussed in
+https://gitlab.com/doronbehar/nix-matlab/-/merge_requests/1#note_631741222[!1].

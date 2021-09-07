@@ -125,8 +125,8 @@ TODO
 
 Some people may wish to not install matlab globally, and only making it part of
 the `buildInputs` of their project. Usually this paradigm follows along with
-https://direnv.net/[`direnv`] +
-https://nixos.wiki/wiki/Development_environment_with_nix-shell#Using_Direnv[`shell.nix`]
+https://direnv.net/[`direnv`]
++ https://nixos.wiki/wiki/Development_environment_with_nix-shell#Using_Direnv[`shell.nix`]
 / https://nixos.wiki/wiki/Flakes#Direnv_integration[`flake.nix`] setup. For
 example you can create in your project a `shell.nix`, or define `devShell` in
 your `flake.nix` similarly to this: 
@@ -148,6 +148,35 @@ pkgs.mkShell {
 
 Note that Matlab still needs to be installed in a user-writeable location for
 this `shellHook` to work, as explained xref:#user-content-install[here].
+
+== FAQ
+
+=== Matlab says that my license was installed for a different Host ID, why does it happen?
+
+I haven't had reports of this issue by users of this repo, but I experience it
+myself sometimes, and I think it's a good thing to include in this README. I
+use Gnome with NetworkManager on my laptop, and rarely I use USB tethering with
+my Android. From some reason while I'm tethered, I get the following error when
+I launch matlab from the command line:
+
+----
+The hostid of your computer ("000000000000 111111111111") does not match the hostid of the license
+file (XXXXXXXXXXXX).
+----
+
+I get this error although I set in my `/etc/nixos/configuration.nix`:
+
+[source,nix]
+----
+networking.hostId = "6b216943" # fake id
+----
+
+As explained in the https://www.mathworks.com/support/lme/R2021a/9[link in the
+full error message], I can reactivate the license and not go again through the
+whole installation procedure. But I will be required to reactivate the license
+again afterwards when I switch again to WiFi internet connection. It's somewhat
+annoying, and I haven't found a solution / explanation why does my host id
+changes when I switch to a wired connection.
 
 == Previous work / Credits
 

@@ -32,6 +32,13 @@ pkgs:
   unzip
   zlib
 
+  # These packages are needed since 2021b version
+  gnome2.gtk
+  at_spi2_atk
+  at-spi2-core
+  libdrm
+  libGL_driver
+
   gcc
   gfortran
 

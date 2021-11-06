@@ -22,9 +22,7 @@ pkgs:
   nss
   pam
   pango
-  python27
-  python36
-  python37
+  python3
   libselinux
   libsndfile
   glibcLocales

@@ -1,4 +1,5 @@
 = Matlab for Nix users
+:source-highlighter: rouge
 
 This repo is a collection of files that should help Nix and NixOS users install Matlab imperatively.
 
@@ -106,7 +107,7 @@ Add to your `configration.nix` (untested, but should work):
 [source,nix]
 ----
   nixpkgs.overlays = let
-    nix-matlab = import (builtins.fetchTarball "https://gitlab.com/doronbehar/nix-matlab/-/archive/master/nix-matlab-master.tar.gz") { };
+    nix-matlab = import (builtins.fetchTarball "https://gitlab.com/doronbehar/nix-matlab/-/archive/master/nix-matlab-master.tar.gz");
   in [
     nix-matlab.overlay
     (

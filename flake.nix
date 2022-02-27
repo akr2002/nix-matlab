@@ -63,9 +63,7 @@
     packages.x86_64-linux.matlab-shell = pkgs.buildFHSUserEnv {
       name = "matlab-shell";
       inherit targetPkgs;
-      runScript = ''
-        # needed for simulink in fact, but doesn't harm here as well.
-        export QT_QPA_PLATFORM=xcb
+      runScript = runScriptPrefix + ''
         cat <<EOF
         ============================
         welcome to nix-matlab shell!

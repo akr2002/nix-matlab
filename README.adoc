@@ -142,7 +142,7 @@ pkgs.mkShell {
     matlab-mlint
     matlab-mex
   ]);
-  # Define C include path env vars for c development
+  # Define C include path env vars for c development and PYTHONPATH for `import matlab`.
   shellHook = nix-matlab.shellHooksCommon;
 }
 ----

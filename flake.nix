@@ -100,6 +100,8 @@
     # direnv setup. See:
     # https://gitlab.com/doronbehar/nix-matlab/-/merge_requests/1#note_631741222
     shellHooksCommon = runScriptPrefix + ''
+      # To `import matlab` inside the Python that's inside the dev shell
+      export PYTHONPATH="$INSTALL_DIR/extern/engines/python/dist"
       export C_INCLUDE_PATH=$INSTALL_DIR/extern/include:$C_INCLUDE_PATH
       export CPLUS_INCLUDE_PATH=$INSTALL_DIR/extern/include:$CPLUS_INCLUDE_PATH
       # Rename the variable for others to extend it in their shellHook

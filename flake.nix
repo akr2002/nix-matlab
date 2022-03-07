@@ -55,6 +55,16 @@
         "plotting"
       ];
     };
+    # Might be useful for usage of this flake in another flake with devShell +
+    # direnv setup. See:
+    # https://gitlab.com/doronbehar/nix-matlab/-/merge_requests/1#note_631741222
+    shellHooksCommon = runScriptPrefix + ''
+      export C_INCLUDE_PATH=$INSTALL_DIR/extern/include:$C_INCLUDE_PATH
+      export CPLUS_INCLUDE_PATH=$INSTALL_DIR/extern/include:$CPLUS_INCLUDE_PATH
+      # Rename the variable for others to extend it in their shellHook
+      export MATLAB_INSTALL_DIR="$INSTALL_DIR"
+      unset INSTALL_DIR
+    '';
   in {
 
     packages.x86_64-linux.matlab = pkgs.buildFHSUserEnv {
@@ -75,7 +85,7 @@
     packages.x86_64-linux.matlab-shell = pkgs.buildFHSUserEnv {
       name = "matlab-shell";
       inherit targetPkgs;
-      runScript = runScriptPrefix + ''
+      runScript = shellHooksCommon + ''
         cat <<EOF
         ============================
         welcome to nix-matlab shell!
@@ -89,6 +99,61 @@
         ============================
         EOF
         exec bash
+      '';
+    };
+    # This could have been defined as an overlay for the python3.pkgs attribute
+    # set, defined with `packageOverrides`, but this won't bring any benefit
+    # because in order to use the matlab engine, one needs to be inside an
+    # FHSUser environment anyway.
+    packages.x86_64-linux.matlab-python-package = pkgs.python3.pkgs.buildPythonPackage rec {
+      # No version - can be used with every matlab version (R2021b or R2021a etc)
+      name = "matlab-python-package";
+      unpackCmd = ''
+        cp -r ${src}/ matlab-python-src
+        sourceRoot=$PWD/matlab-python-src
+      '';
+      patches = [
+        # Matlab designed this python package to be installed imperatively, and
+        # on an impure system - running `python setup.py install` creates an
+        # `_arch.txt` file in /usr/local/lib/python3.9/site-packages/matlab (or
+        # alike), which tells the `__init__.py` where matlab is installed and
+        # where do some .so files reside. This doesn't suit a nix installation,
+        # and the best way IMO to work around this is to patch the __init__.py
+        # file to use the $MATLAB_INSTALL_DIR to find these shared objects and
+        # not read any _arch.txt file.
+        ./python-no_arch.txt-file.patch
+      ];
+      src = pkgs.requireFile {
+        name = "matlab-python-src";
+        /*
+        NOTE: Perhaps for a different matlab installation of perhaps a
+        different version of matlab, this hash will be different.
+        To check / compare / print the hash created by your installation:
+
+        $ nix-store --query --hash \
+            $(nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src')
+        */
+        sha256 = "19wdzglr8j6966d3s777mckry2kcn99xbfwqyl5j02ir3vidd23h";
+        hashMode = "recursive";
+        message = ''
+          In order to use the matlab python engine, you have to run this command:
+
+          ```
+          source ~/.config/matlab/nix.sh
+          nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src'
+          ```
+
+          And hopefully the hash that's in nix-matlab's flake.nix will be the
+          same as the one generated from your installation.
+        '';
+      };
+    };
+    packages.x86_64-linux.matlab-python-shell = pkgs.buildFHSUserEnv {
+      name = "matlab-python-shell";
+      inherit targetPkgs;
+      runScript = shellHooksCommon + ''
+        export PYTHONPATH=${self.packages.x86_64-linux.matlab-python-package-R2021b}/${pkgs.python3.sitePackages}
+        exec python "$@"
       '';
     };
     packages.x86_64-linux.matlab-mlint = pkgs.buildFHSUserEnv {
@@ -108,18 +173,7 @@
     overlay = final: prev: {
       inherit (self.packages.x86_64-linux) matlab matlab-shell matlab-mlint matlab-mex;
     };
-    # Might be useful for usage of this flake in another flake with devShell +
-    # direnv setup. See:
-    # https://gitlab.com/doronbehar/nix-matlab/-/merge_requests/1#note_631741222
-    shellHooksCommon = runScriptPrefix + ''
-      # To `import matlab` inside the Python that's inside the dev shell
-      export PYTHONPATH="$INSTALL_DIR/extern/engines/python/dist"
-      export C_INCLUDE_PATH=$INSTALL_DIR/extern/include:$C_INCLUDE_PATH
-      export CPLUS_INCLUDE_PATH=$INSTALL_DIR/extern/include:$CPLUS_INCLUDE_PATH
-      # Rename the variable for others to extend it in their shellHook
-      export MATLAB_INSTALL_DIR="$INSTALL_DIR"
-      unset INSTALL_DIR
-    '';
+    inherit shellHooksCommon;
     devShell.x86_64-linux = pkgs.mkShell {
       buildInputs = (targetPkgs pkgs) ++ [
         self.packages.x86_64-linux.matlab-shell

@@ -1,0 +1,34 @@
+diff --git i/dist/matlab/engine/__init__.py w/dist/matlab/engine/__init__.py
+index 45bf9ae..d606284 100644
+--- i/dist/matlab/engine/__init__.py
++++ w/dist/matlab/engine/__init__.py
+@@ -50,10 +50,13 @@ except Exception as firstE:
+ 
+ if firstExceptionMessage:
+     try:
+-        _arch_file = open(_arch_filename,'r')
+-        _lines = _arch_file.readlines()
+-        [_arch, _bin_dir,_engine_dir, _extern_bin_dir] = [x.rstrip() for x in _lines if x.rstrip() != ""]
+-        _arch_file.close()
++        # TODO: Support for other architectures?
++        _arch = "glnxa64"
++        nix_install_location = os.path.expandvars('$MATLAB_INSTALL_DIR')
++        _bin_dir = os.path.join(nix_install_location, 'bin')
++        _engine_dir = os.path.join(nix_install_location,
++                'extern', 'engines', 'python', 'dist', 'matlab', 'engine', _arch)
++        _extern_bin_dir = os.path.join(nix_install_location, 'extern', 'bin', _arch)
+         sys.path.insert(0,_engine_dir)
+         sys.path.insert(0,_extern_bin_dir)
+ 
+diff --git i/setup.py w/setup.py
+index 49149e5..9f45560 100644
+--- i/setup.py
++++ w/setup.py
+@@ -72,7 +72,6 @@ class BuildEngine(build_py):
+     def run(self):
+         build_py.run(self)
+         _target_dir = os.path.join(self.build_lib, _matlab_package, _engine_package)
+-        self._generate_arch_file(_target_dir)
+ 
+ 
+ if __name__ == '__main__':

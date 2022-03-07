@@ -68,7 +68,8 @@
     # Used in many packages
     metaCommon = with pkgs.lib; {
       homepage = "https://www.mathworks.com/";
-      license = licenses.unfree;
+      # This license is not of matlab itself, but for this repository
+      license = licenses.mit;
       # Probably best to install this completely imperatively on a system other
       # then NixOS.
       platforms = platforms.linux;

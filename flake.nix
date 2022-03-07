@@ -119,7 +119,7 @@
     # set, defined with `packageOverrides`, but this won't bring any benefit
     # because in order to use the matlab engine, one needs to be inside an
     # FHSUser environment anyway.
-    packages.x86_64-linux.matlab-python-package = pkgs.python3.pkgs.buildPythonPackage rec {
+    packages.x86_64-linux.matlab-python-package-R2021b = pkgs.python3.pkgs.buildPythonPackage rec {
       # No version - can be used with every matlab version (R2021b or R2021a etc)
       name = "matlab-python-package";
       unpackCmd = ''

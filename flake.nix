@@ -176,7 +176,7 @@
       '';
       meta = metaCommon // {
         homepage = "https://www.mathworks.com/help/matlab/matlab-engine-for-python.html";
-        description = "A python shell from which you can use matlab's python engine or launch matlab from CLI";
+        description = "A python shell from which you can use matlab's python engine";
       };
     };
     packages.x86_64-linux.matlab-mlint = pkgs.buildFHSUserEnv {

@@ -98,6 +98,9 @@
       name = "matlab-shell";
       inherit targetPkgs;
       runScript = shellHooksCommon + ''
+        # Needed only for installation from some reason, see:
+        # https://discourse.nixos.org/t/a-non-nixos-linux-binary-matlab-requires-libgl-so-1-twice/18379/2
+        export LD_PRELOAD=${pkgs.libglvnd}/lib/libGL.so.1
         cat <<EOF
         ============================
         welcome to nix-matlab shell!

@@ -74,6 +74,39 @@
       # then NixOS.
       platforms = platforms.linux;
     };
+
+    # Generate an src for the python packages - different versions have
+    # different hashes
+    #
+    # TODO: should we create a function that will create matlab-python-package
+    # for each matlab version?
+    generatePythonSrc = version: pkgs.requireFile {
+      name = "matlab-python-src";
+      /*
+      NOTE: Perhaps for a different matlab installation of perhaps a
+      different version of matlab, this hash will be different.
+      To check / compare / print the hash created by your installation:
+
+      $ nix-store --query --hash \
+          $(nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src')
+      */
+      sha256 = {
+        "2022a" = "19v09q2y2liinalwxszq3xq70y6mbicbkvzgjvav195pwmz3s36v";
+        "2021b" = "19wdzglr8j6966d3s777mckry2kcn99xbfwqyl5j02ir3vidd23h";
+      }.${version};
+      hashMode = "recursive";
+      message = ''
+        In order to use the matlab python engine, you have to run this command:
+
+        ```
+        source ~/.config/matlab/nix.sh
+        nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src'
+        ```
+
+        And hopefully the hash that's in nix-matlab's flake.nix will be the
+        same as the one generated from your installation.
+      '';
+    };
   in {
 
     packages.x86_64-linux.matlab = pkgs.buildFHSUserEnv {
@@ -141,30 +174,7 @@
         # not read any _arch.txt file.
         ./python-no_arch.txt-file.patch
       ];
-      src = pkgs.requireFile {
-        name = "matlab-python-src";
-        /*
-        NOTE: Perhaps for a different matlab installation of perhaps a
-        different version of matlab, this hash will be different.
-        To check / compare / print the hash created by your installation:
-
-        $ nix-store --query --hash \
-            $(nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src')
-        */
-        sha256 = "19wdzglr8j6966d3s777mckry2kcn99xbfwqyl5j02ir3vidd23h";
-        hashMode = "recursive";
-        message = ''
-          In order to use the matlab python engine, you have to run this command:
-
-          ```
-          source ~/.config/matlab/nix.sh
-          nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src'
-          ```
-
-          And hopefully the hash that's in nix-matlab's flake.nix will be the
-          same as the one generated from your installation.
-        '';
-      };
+      src = generatePythonSrc "2022a";
       meta = metaCommon // {
         homepage = "https://www.mathworks.com/help/matlab/matlab-engine-for-python.html";
         description = "Matlab engine for python - Nix package, slightly patched for a Nix installation";

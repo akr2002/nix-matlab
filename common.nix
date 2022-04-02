@@ -48,6 +48,9 @@ pkgs:
   # Keyboard input may not work in simulink otherwise
   libxkbcommon
   xkeyboard_config
+
+  # Needed since 2022a
+  libglvnd
 ]) ++ (with pkgs.xorg; [
   libSM
   libX11

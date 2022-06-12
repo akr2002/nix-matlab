@@ -27,6 +27,8 @@ nix-shell
 
 === Installation of Matlab itself
 
+From inside the FHS shell, follow the following steps:
+
 include::./install.adoc[]
 
 === Adding `matlab` executables to your system
@@ -40,9 +42,9 @@ $(nix-build)/bin/matlab
 nix run gitlab:doronbehar/nix-matlab
 ....
 
-But it's likely you'd like to make Matlab survive garbage collections and add a
-desktop launcher to your system. To do that you can follow one of the following
-paths according to your setup.
+But it's likely you'd like to make Matlab's FHS environment survive garbage
+collections and add a desktop launcher to your system. To do that you can
+follow one of the following paths according to your setup.
 
 ==== For NixOS users with a flakes setup
 
@@ -142,7 +144,7 @@ pkgs.mkShell {
     matlab-mlint
     matlab-mex
   ]);
-  # Define C include path env vars for c development and PYTHONPATH for `import matlab`.
+  # Define C include path env vars for c development
   shellHook = nix-matlab.shellHooksCommon;
 }
 ----

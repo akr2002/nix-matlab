@@ -96,12 +96,10 @@
       }.${version};
       hashMode = "recursive";
       message = ''
-        In order to use the matlab python engine, you have to run this command:
+        In order to use the matlab python engine, you have to run these commands:
 
-        ```
-        source ~/.config/matlab/nix.sh
-        nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src'
-        ```
+        > source ~/.config/matlab/nix.sh
+        > nix store add-path $INSTALL_DIR/extern/engines/python --name 'matlab-python-src'
 
         And hopefully the hash that's in nix-matlab's flake.nix will be the
         same as the one generated from your installation.

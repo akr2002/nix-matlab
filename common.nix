@@ -6,7 +6,7 @@ pkgs:
 
 (with pkgs; [
   cacert
-  alsaLib # libasound2
+  alsa-lib # libasound2
   atk
   glib
   glibc

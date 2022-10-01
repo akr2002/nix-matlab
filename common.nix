@@ -51,6 +51,9 @@ pkgs:
 
   # Needed since 2022a
   libglvnd
+
+  # Needed since 2022b
+  libuuid
 ]) ++ (with pkgs.xorg; [
   libSM
   libX11

@@ -31,6 +31,12 @@ From inside the FHS shell, follow the following steps:
 
 include::./install.adoc[]
 
+IMPORTANT: Due to a not fully understood issue in Matlab, you might experience
+difficulty openning text files in Matlab's editor. The symptoms are described
+https://www.mathworks.com/matlabcentral/answers/1815470-matlab-live-editor-unable-to-open-this-file-in-the-current-system-configuration[here],
+along with the
+https://www.mathworks.com/matlabcentral/answers/1815470-matlab-live-editor-unable-to-open-this-file-in-the-current-system-configuration#answer_1079558[solution].
+
 === Adding `matlab` executables to your system
 
 With what was done now, you run Matlab from the command line with:

@@ -118,9 +118,9 @@
         install -Dm644 ${./icons/hicolor/512x512/matlab.png} $out/share/icons/hicolor/512x512/matlab.png
         install -Dm644 ${./icons/hicolor/64x64/matlab.png} $out/share/icons/hicolor/64x64/matlab.png
       '';
-      runScript = runScriptPrefix + ''
+      runScript = pkgs.writeScript "matlab-runner" (runScriptPrefix + ''
         exec $INSTALL_DIR/bin/matlab "$@"
-      '';
+      '');
       meta = metaCommon // {
         description = "Matlab itself - the GUI launcher";
       };
@@ -128,7 +128,7 @@
     packages.x86_64-linux.matlab-shell = pkgs.buildFHSUserEnv {
       name = "matlab-shell";
       inherit targetPkgs;
-      runScript = shellHooksCommon + ''
+      runScript = pkgs.writeScript "matlab-shell-runner" ''
         cat <<EOF
         ============================
         welcome to nix-matlab shell!
@@ -178,10 +178,10 @@
     packages.x86_64-linux.matlab-python-shell = pkgs.buildFHSUserEnv {
       name = "matlab-python-shell";
       inherit targetPkgs;
-      runScript = shellHooksCommon + ''
+      runScript = pkgs.writeScript "matlab-python-shell-runner" (shellHooksCommon + ''
         export PYTHONPATH=${self.packages.x86_64-linux.matlab-python-package}/${pkgs.python3.sitePackages}
         exec python "$@"
-      '';
+      '');
       meta = metaCommon // {
         homepage = "https://www.mathworks.com/help/matlab/matlab-engine-for-python.html";
         description = "A python shell from which you can use matlab's python engine";
@@ -190,9 +190,9 @@
     packages.x86_64-linux.matlab-mlint = pkgs.buildFHSUserEnv {
       name = "mlint";
       inherit targetPkgs;
-      runScript = runScriptPrefix + ''
+      runScript = pkgs.writeScript "matlab-mlint-runner" (runScriptPrefix + ''
         exec $INSTALL_DIR/bin/glnxa64/mlint "$@"
-      '';
+      '');
       meta = metaCommon // {
         homepage = "https://www.mathworks.com/help/matlab/ref/mlint.html";
         description = "Check MATLAB code files for possible problems";
@@ -201,9 +201,9 @@
     packages.x86_64-linux.matlab-mex = pkgs.buildFHSUserEnv {
       name = "mex";
       inherit targetPkgs;
-      runScript = runScriptPrefix + ''
+      runScript = pkgs.writeScript "matlab-mex-runner" (runScriptPrefix + ''
         exec $INSTALL_DIR/bin/glnxa64/mex "$@"
-      '';
+      '');
       meta = metaCommon // {
         homepage = "https://www.mathworks.com/help/matlab/ref/mex.html";
         description = "Build MEX function or engine application";

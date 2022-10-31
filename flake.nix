@@ -13,19 +13,20 @@
     # supported
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
     targetPkgs = import ./common.nix;
-    runScriptPrefix = ''
+    runScriptPrefix = {errorOut ? true}: ''
       # Needed for simulink even on wayland systems
       export QT_QPA_PLATFORM=xcb
       # Search for an imperative declaration of the installation directory of matlab
       if [[ -f ~/.config/matlab/nix.sh ]]; then
         source ~/.config/matlab/nix.sh
-      else
+    '' + pkgs.lib.optionalString errorOut ''else
         echo "nix-matlab-error: Did not find ~/.config/matlab/nix.sh" >&2
         exit 1
       fi
       if [[ ! -d "$INSTALL_DIR" ]]; then
         echo "nix-matlab-error: INSTALL_DIR $INSTALL_DIR isn't a directory" >&2
         exit 2
+    '' + ''
       fi
     '';
     desktopItem = pkgs.makeDesktopItem {
@@ -58,7 +59,7 @@
     # Might be useful for usage of this flake in another flake with devShell +
     # direnv setup. See:
     # https://gitlab.com/doronbehar/nix-matlab/-/merge_requests/1#note_631741222
-    shellHooksCommon = runScriptPrefix + ''
+    shellHooksCommon = (runScriptPrefix {}) + ''
       export C_INCLUDE_PATH=$INSTALL_DIR/extern/include:$C_INCLUDE_PATH
       export CPLUS_INCLUDE_PATH=$INSTALL_DIR/extern/include:$CPLUS_INCLUDE_PATH
       # Rename the variable for others to extend it in their shellHook
@@ -118,7 +119,7 @@
         install -Dm644 ${./icons/hicolor/512x512/matlab.png} $out/share/icons/hicolor/512x512/matlab.png
         install -Dm644 ${./icons/hicolor/64x64/matlab.png} $out/share/icons/hicolor/64x64/matlab.png
       '';
-      runScript = pkgs.writeScript "matlab-runner" (runScriptPrefix + ''
+      runScript = pkgs.writeScript "matlab-runner" ((runScriptPrefix {}) + ''
         exec $INSTALL_DIR/bin/matlab "$@"
       '');
       meta = metaCommon // {
@@ -128,7 +129,12 @@
     packages.x86_64-linux.matlab-shell = pkgs.buildFHSUserEnv {
       name = "matlab-shell";
       inherit targetPkgs;
-      runScript = pkgs.writeScript "matlab-shell-runner" ''
+      runScript = pkgs.writeScript "matlab-shell-runner" (
+        (runScriptPrefix {
+          # If the user hasn't setup a ~/.config/matlab/nix.sh file yet, don't
+          # yell at them that it's missing
+          errorOut = false;
+        }) + ''
         cat <<EOF
         ============================
         welcome to nix-matlab shell!
@@ -142,7 +148,7 @@
         ============================
         EOF
         exec bash
-      '';
+      '');
       meta = metaCommon // {
         description = "A bash shell from which you can install matlab or launch matlab from CLI";
       };
@@ -190,7 +196,7 @@
     packages.x86_64-linux.matlab-mlint = pkgs.buildFHSUserEnv {
       name = "mlint";
       inherit targetPkgs;
-      runScript = pkgs.writeScript "matlab-mlint-runner" (runScriptPrefix + ''
+      runScript = pkgs.writeScript "matlab-mlint-runner" ((runScriptPrefix {}) + ''
         exec $INSTALL_DIR/bin/glnxa64/mlint "$@"
       '');
       meta = metaCommon // {
@@ -201,7 +207,7 @@
     packages.x86_64-linux.matlab-mex = pkgs.buildFHSUserEnv {
       name = "mex";
       inherit targetPkgs;
-      runScript = pkgs.writeScript "matlab-mex-runner" (runScriptPrefix + ''
+      runScript = pkgs.writeScript "matlab-mex-runner" ((runScriptPrefix {}) + ''
         exec $INSTALL_DIR/bin/glnxa64/mex "$@"
       '');
       meta = metaCommon // {

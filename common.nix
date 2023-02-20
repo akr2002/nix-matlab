@@ -54,6 +54,8 @@ pkgs:
 
   # Needed since 2022b
   libuuid
+  libxcrypt
+
 ]) ++ (with pkgs.xorg; [
   libSM
   libX11

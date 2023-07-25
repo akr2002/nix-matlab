@@ -225,7 +225,7 @@
     };
     inherit shellHooksCommon;
     devShell.x86_64-linux = pkgs.mkShell {
-      buildInputs = (targetPkgs pkgs) ++ [
+      buildInputs = [
         self.packages.x86_64-linux.matlab-shell
       ];
       # From some reason using the attribute matlab-shell directly as the

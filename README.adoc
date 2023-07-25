@@ -158,6 +158,80 @@ pkgs.mkShell {
 Note that Matlab still needs to be installed in a user-writeable location for
 this `shellHook` to work, as explained xref:#user-content-install[here].
 
+==== Adding packages to matlab's environment
+
+Another non-trivial example usage of this flake, somewhat similar to the above,
+is to create a matlab development environment that includes external tools that
+you want to run from within matlab. The following `flake.nix` uses nix-matlab
+as an input flake and adds lammps package to the FHS environment. With this
+flake, you can run `nix develop` and run `system('lmp')` from within matlab's
+CLI:
+
+[source,nix]
+----
+{
+  description = "Matlab fhs environment with lammps included, uses gitlab:doronbehar/nix-matlab";
+
+  inputs = {
+    # https://gitlab.com/doronbehar/nix-matlab
+    nix-matlab = {
+      url = "gitlab:doronbehar/nix-matlab";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixpkgs = {
+      url = "github:nixos/nixpkgs/nixos-unstable";
+    };
+  };
+
+  outputs = { self
+  , nixpkgs
+  , nix-matlab
+  }: let
+    pkgs = import nixpkgs {
+      system = "x86_64-linux";
+    };
+  in {
+    packages.x86_64-linux = {
+      matlab-lammps = pkgs.buildFHSUserEnv {
+        name = "matlab-lammps";
+        targetPkgs = ps: (nix-matlab.targetPkgs ps ++ [
+          pkgs.lammps
+        ]);
+        runScript = pkgs.writeScript "matlab-lammps" (nix-matlab.shellHooksCommon + ''
+          exec $MATLAB_INSTALL_DIR/bin/matlab "$@"
+        '');
+        meta = {
+          description = "MATLAB with lammps included in FHS environment";
+        };
+      };
+      matlab-lammps-shell = pkgs.buildFHSUserEnv {
+        name = "matlab-lammps-shell";
+        targetPkgs = ps: (nix-matlab.targetPkgs ps ++ [
+          pkgs.lammps
+        ]);
+        runScript = pkgs.writeScript "matlab-lammps" (nix-matlab.shellHooksCommon + ''
+          echo matlab is installed in $MATLAB_INSTALL_DIR/bin/matlab
+          exec bash
+        '');
+        meta = {
+          description = "MATLAB shell with lammps included in FHS environment";
+        };
+      };
+    };
+    devShell.x86_64-linux = pkgs.mkShell {
+      buildInputs = [
+        self.packages.x86_64-linux.matlab-lammps-shell
+      ];
+      # From some reason using the attribute matlab-shell directly as the
+      # devShell doesn't make it run like that by default.
+      shellHook = ''
+        exec matlab-lammps-shell
+      '';
+    };
+  };
+}
+----
+
 == FAQ
 
 === Matlab says that my license was installed for a different Host ID, why does it happen?

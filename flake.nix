@@ -224,6 +224,7 @@
       ;
     };
     inherit shellHooksCommon;
+    inherit targetPkgs;
     devShell.x86_64-linux = pkgs.mkShell {
       buildInputs = [
         self.packages.x86_64-linux.matlab-shell
